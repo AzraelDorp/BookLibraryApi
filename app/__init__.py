@@ -1,5 +1,5 @@
 from flask import Flask
-from shared.config import get_config
+from app.shared.config import get_config
 from app.blueprint import blueprint
 
 

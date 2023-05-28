@@ -1,18 +1,28 @@
 from flask_restx import Namespace, Resource
 from flask import request
+from flask_accepts import accepts, responds
+from .schema import BookSchema, BookSchemaResponse
+api = Namespace(name="books", description="")
 
-api = Namespace("books", description="")
+from .model import BookModel
 
 # plural for many
+
 @api.route("")
 class BookAPI(Resource):
+    @responds(schema=BookSchemaResponse, api=api)
     @api.doc(responses={"200": "OK"})
     def get(self):
-        '''Returns all Book with filters'''
-        return {"success", 200}
+        '''Returns all Books with filters'''
+        # books = DatabaseModel().getAllItems("Books")
+        books = BookModel().getAllItems("Books")
+        print(books)
+        return  {"books": books}
     
     # build a post functions for the the book route
     @api.doc(responses={"201": "Created"})
+    @accepts(schema=BookSchema, api=api)
+    
     def post(self):
         '''Creates a new Book'''
         book_data = []
@@ -25,13 +35,16 @@ class BookAPI(Resource):
 
 
 # singular for one
-@api.route("/<int:id>")
+@api.route("/<id>")
 @api.param("id", "Book identifier")
 @api.response(404, "Book not found")
 class Book(Resource):
+    @responds(schema=BookSchema, api=api)
+
     @api.doc(responses={"200": "OK"})
     def get(self, id):
         '''Returns a Book with id'''
-        return {"success", 200}
+        book = BookModel().getBookByID(BookSchema,id)
+        return book
     
 
