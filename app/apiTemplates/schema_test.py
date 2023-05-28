@@ -1,0 +1,1 @@
+# schema will hold the data structure for the api
