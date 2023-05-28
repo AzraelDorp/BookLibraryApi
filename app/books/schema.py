@@ -3,7 +3,7 @@ from bson import objectid
 
 # write a schema for the book model
 class BookSchema(Schema):
-    isbn = fields.String()
+    isbn = fields.String(required=True)
     title = fields.String(required=True)
     authors = fields.List(fields.String())
     description = fields.String()
