@@ -1,0 +1,1 @@
+# act as the routes and controller for the api
