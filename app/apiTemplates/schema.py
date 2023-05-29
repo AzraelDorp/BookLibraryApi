@@ -1,1 +1,1 @@
-# test for shema
+# test for schema
