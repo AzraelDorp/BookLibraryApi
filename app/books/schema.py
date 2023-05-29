@@ -1,15 +1,14 @@
 from marshmallow import Schema, fields
-from bson import objectid
-
 # write a schema for the book model
 class BookSchema(Schema):
-    isbn = fields.String(required=True)
+    book_id = fields.String()
     title = fields.String(required=True)
     authors = fields.List(fields.String())
     description = fields.String()
+    isbn = fields.String()
     year_published = fields.Integer()
-    created_at = fields.DateTime()
-    updated_at = fields.DateTime()
+    created_at = fields.String() # look into ways to convert to datetime
+    updated_at = fields.String()
     genre = fields.String()
     image = fields.String()
     publisher = fields.String()
@@ -24,6 +23,12 @@ class BookSchema(Schema):
 
 class BookSchemaResponse(Schema):
     books = fields.List(fields.Nested(BookSchema))
+
+
+class BookSchemaPost(BookSchema):
+    pass
+
+
     # # class Meta:
     # #     ordered = True
     # #     fields = ('id', 'title', 'author', 'description', 'year', 'created_at', 'updated_at', 'genre', 'isbn', 'image', 'publisher', 'pages', 'language', 'country', 'link', 'quantity')

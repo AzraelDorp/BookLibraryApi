@@ -86,16 +86,19 @@ class DatabaseModel:
             print("Error getting item: ", e)
             return None
         else:
-            deserialised = {k: self.deserializer.deserialize(v) for k, v in get_result.get("Item").items()}
-            return tableSchema().load(deserialised, unknown=EXCLUDE)
+            if get_result.get("Item"):
+                deserialised = {k: self.deserializer.deserialize(v) for k, v in get_result.get("Item").items()}
+                return tableSchema.load(deserialised, unknown=EXCLUDE)
+            else:
+                return None
 
     # add an item to a table
-    def addItem(self, tableName, item, tableSchema):
+    def addItem(self, tableName, tableSchema, item):
         # add an item
         try:
             response = self.client.put_item(
                 TableName=tableName,
-                Item={k: self.serializer.serialize(v) for k, v in tableSchema.Schema().dump(item).items() if v != ""}
+                Item={k: self.serializer.serialize(v) for k, v in tableSchema.dump(item).items() if v != ""}
             )
         except ClientError as err:
             raise err
@@ -114,14 +117,12 @@ class DatabaseModel:
     #         return False
         
     # update an item in a table
-    def updateItem(self, tableName, key, updateExpression, expressionAttributeValues):
+    def updateItemByID(self, tableName, tableSchema, key, item):
         # update an item
         try:
-            table = self.resource.Table(tableName)
-            table.update_item(
-                Key=key,
-                UpdateExpression=updateExpression,
-                ExpressionAttributeValues=expressionAttributeValues
+            self.client.put_item(
+                TableName=tableName,
+                Item={k: self.serializer.serialize(v) for k, v in tableSchema.dump(item).items() if v != ""},
             )
             return True
         except Exception as e:
