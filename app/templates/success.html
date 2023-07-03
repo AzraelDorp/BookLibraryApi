@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Successfully Added Book {% endblock %}</h1>
+        <div class='book' style="background-color: rgb(204, 232, 241) ; padding: 10px; border: 1px solid rgb(11, 12, 12);">
+            <h3>Title : {{ books['title'] }}</h3>
+            <p>Authors: {{ books['authors'] }}</p>
+            <p>Isbn: {{ books['isbn'] }}</p>
+            <p>description: {{ books['description'] }}</p>
+        </div>
+{% endblock %}

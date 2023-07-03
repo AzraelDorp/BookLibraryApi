@@ -22,7 +22,7 @@ class BookModel(DatabaseModel):
     
     # need to add filters here
     def getAllBooks(self):
-        books = self.getAllItems("Books")
+        books = self.getAllItems("Books", BookSchema())
         return books
 
      # delete a book

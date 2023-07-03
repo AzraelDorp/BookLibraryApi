@@ -162,3 +162,8 @@ cython_debug/
 
 # local
 localstuff/
+books.json
+backup.py
+delete.py
+restore.py
+.serverless/

@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restx import Api
-from app.books.controller import api as books
+from .books.controller import api as books
 
 blueprint = Blueprint('api', __name__,'/')
 

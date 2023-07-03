@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Books {% endblock %}</h1>
+    {% for book in books %}
+        <div class='book' style="background-color: rgb(204, 232, 241) ; padding: 10px; border: 1px solid rgb(11, 12, 12); align-content: center; width: 500px;">
+            <h3>Title : {{ book['title'] }}</h3>
+            <p>Authors: {{ book['authors'] }}</p>
+            <p>Isbn: {{ book['isbn'] }}</p>
+            <p>description: {{ book['description'] }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,46 @@
+service: serverless-flask-container
+
+provider:
+  name: aws
+  stage: prod
+  iam:  
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:us-east-1:*:*"
+  ecr:
+    images:
+      appimage:
+        path: ./
+
+functions:
+  app:
+    image:
+      name: appimage
+    timeout: 30
+    events:
+      - http: ANY /books
+      - http: 'ANY /{proxy+}'
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: book_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: book_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: Books

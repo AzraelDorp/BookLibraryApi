@@ -6,6 +6,8 @@ from marshmallow import EXCLUDE
 
 # write a class that will inilitize aws credentials
 # and will have methods to interact with the database
+
+
 class DatabaseModel:
     def __init__(self):
         self.client = boto3.client('dynamodb', region_name='us-east-1')
@@ -62,14 +64,20 @@ class DatabaseModel:
         except Exception as e:
             print("Error getting tables: ", e)
             return None
-    
+
     # get all items in a table
-    def getAllItems(self, tableName):
+    def getAllItems(self, tableName, tableSchema):
         # get all items
         try:
-            table = self.resource.Table(tableName)
-            items = table.scan()['Items']
-            return items
+            results = []
+            get_result = self.client.scan(TableName=tableName)
+            for j in get_result.get('Items'):
+                deserialized = {k: self.deserializer.deserialize(
+                    v) for k, v in j.items()}
+                results.append(tableSchema.load(deserialized, unknown=EXCLUDE))
+
+            return results
+
         except Exception as e:
             print("Error getting all items: ", e)
             return None
@@ -87,8 +95,9 @@ class DatabaseModel:
             return None
         else:
             if get_result.get("Item"):
-                deserialised = {k: self.deserializer.deserialize(v) for k, v in get_result.get("Item").items()}
-                return tableSchema.load(deserialised, unknown=EXCLUDE)
+                deserialized = {k: self.deserializer.deserialize(
+                    v) for k, v in get_result.get("Item").items()}
+                return tableSchema.load(deserialized, unknown=EXCLUDE)
             else:
                 return None
 
@@ -98,31 +107,22 @@ class DatabaseModel:
         try:
             response = self.client.put_item(
                 TableName=tableName,
-                Item={k: self.serializer.serialize(v) for k, v in tableSchema.dump(item).items() if v != ""}
+                Item={k: self.serializer.serialize(
+                    v) for k, v in tableSchema.dump(item).items() if v != ""}
             )
         except ClientError as err:
             raise err
         else:
-            return response    
-            
-    # # add an item to a table
-    # def addItem(self, tableName, item):
-    #     # add an item
-    #     try:
-    #         table = self.resource.Table(tableName)
-    #         table.put_item(Item=item)
-    #         return True
-    #     except Exception as e:
-    #         print("Error adding item: ", e)
-    #         return False
-        
+            return response
+
     # update an item in a table
     def updateItemByID(self, tableName, tableSchema, key, item):
         # update an item
         try:
             self.client.put_item(
                 TableName=tableName,
-                Item={k: self.serializer.serialize(v) for k, v in tableSchema.dump(item).items() if v != ""},
+                Item={k: self.serializer.serialize(
+                    v) for k, v in tableSchema.dump(item).items() if v != ""},
             )
             return True
         except Exception as e:
@@ -133,7 +133,7 @@ class DatabaseModel:
     def deleteItem(self, tableName, key):
         # delete an item
         try:
-            table = self.resource.Table(tableName)
+            table = self.resource.Table(tableName) # type: ignore
             table.delete_item(Key=key)
             return True
         except Exception as e:
@@ -144,7 +144,7 @@ class DatabaseModel:
     def getItemsWithKeysAndFilterAndLimit(self, tableName, key, sortKey, filterExpression, expressionAttributeValues, limit):
         # get all items
         try:
-            table = self.resource.Table(tableName)
+            table = self.resource.Table(tableName) # type: ignore
             items = table.query(
                 KeyConditionExpression=key,
                 FilterExpression=filterExpression,
@@ -155,12 +155,12 @@ class DatabaseModel:
         except Exception as e:
             print("Error getting items with keys and filter: ", e)
             return None
-    
+
     # get all items with filter
     def getItemsWithFilter(self, tableName, filterExpression, expressionAttributeValues):
         # get all items with filter
         try:
-            table = self.resource.Table(tableName)
+            table = self.resource.Table(tableName) # type: ignore
             items = table.scan(
                 FilterExpression=filterExpression,
                 ExpressionAttributeValues=expressionAttributeValues)['Items']
