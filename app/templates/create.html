@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Add a New Book {% endblock %}</h1>
+    <form method="post">
+        <label for="title">Title</label>
+        <br>
+        <input type="text" name="title" required
+              style="width: 500px"
+               placeholder="title"
+               value="{{ request.form['title'] }}"></input>
+        <br>
+        <label for="Authors">Authors</label>
+        <br>
+        <input type="text" name="authors"
+               style="width: 500px"
+               placeholder="Authors, separated by commas"
+               value="{{ request.form['authors'] }}"></input>
+        <br>
+        <label for="isbn">isbn</label>
+        <br>
+        <input type="text" name="isbn"
+               style="width: 500px"
+               placeholder="isbn"
+               value="{{ request.form['isbn'] }}"></input>
+        <br>
+        <br>
+        <label for="description">Message description</label>
+        <br>
+        <textarea name="description"
+                  style="width: 500px"        
+                  placeholder="Message description"
+                  rows="15"
+                  cols="60"
+                  >{{ request.form['description'] }}</textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
